@@ -1,0 +1,108 @@
+# =============================================================================
+#  Microsoft Partner — Getting Started: Central Link Catalog
+# -----------------------------------------------------------------------------
+#  This is the ONE file you edit to add, remove, or reorder resources.
+#  Rebuild (`npm run build`) or refresh the dev server to see changes.
+#
+#  Structure:
+#    site:    page-level branding/metadata
+#    groups:  ordered list of categories; each has an ordered list of links
+#
+#  Link fields:
+#    title        (required)  Card heading
+#    description  (required)  One or two sentences explaining the resource
+#    url          (required)  Full destination URL (https://...)
+#    readable     (optional)  Short display version of the URL (defaults to host)
+#    icon         (optional)  One of the icon keys below (defaults to "link")
+#                             rocket | badge | sparkle | money | school |
+#                             news | book | shield | link
+#    badge        (optional)  Small pill shown on the card (e.g. "New", "AI")
+#
+#  Group fields:
+#    id           (required)  Unique slug (used for anchors)
+#    name         (required)  Category heading
+#    description  (optional)  Short blurb under the heading
+#    accent       (optional)  Hex color for the category accent (defaults blue)
+#    icon         (optional)  Icon key for the category header
+# =============================================================================
+
+site:
+  brand: "Partner Resources"
+  title: "Microsoft Partner — Getting Started"
+  subtitle: >-
+    A curated launchpad of the programs, funding, skilling, and community
+    resources Microsoft Partners need to get moving fast.
+  footerNote: "Links are curated for convenience. Always confirm program details on the official Microsoft sites."
+
+groups:
+  - id: start-here
+    name: "Start Here"
+    description: "Foundational entry points for new and existing partners."
+    accent: "#0f6cbd"
+    icon: rocket
+    links:
+      - title: "Microsoft AI Cloud Partner Program"
+        description: "Enroll, manage your partnership, and build & sell solutions across cloud and AI."
+        url: "https://partner.microsoft.com/en-US/"
+        readable: "partner.microsoft.com"
+        icon: rocket
+        badge: "Start"
+
+  - id: programs-specializations
+    name: "Programs & Specializations"
+    description: "Validate expertise and join Microsoft's newest AI-first partner motions."
+    accent: "#185a9b"
+    icon: badge
+    links:
+      - title: "Microsoft Advanced Specializations"
+        description: "Earn advanced specializations to demonstrate deep, validated technical capability to customers."
+        url: "https://partner.microsoft.com/en-us/membership/specialization"
+        readable: "partner.microsoft.com/membership/specialization"
+        icon: badge
+      - title: "Microsoft Frontier Partner Program"
+        description: "Become a Frontier Firm — insights, resources, and partner opportunities to lead with AI and Copilot."
+        url: "https://partner.microsoft.com/en-us/blog/article/copilot-monetization-power"
+        readable: "partner.microsoft.com/blog"
+        icon: sparkle
+        badge: "AI"
+
+  - id: funding-incentives
+    name: "Funding & Incentives"
+    description: "Accelerate customer projects with Microsoft partner funding and Azure credits."
+    accent: "#107c10"
+    icon: money
+    links:
+      - title: "Microsoft Accelerate Partner Funding"
+        description: "Azure Accelerate: partner funding, Azure credits, and deployment support for migration, modernization, and AI."
+        url: "https://azure.microsoft.com/en-us/solutions/azure-accelerate/"
+        readable: "azure.microsoft.com/azure-accelerate"
+        icon: money
+
+  - id: skilling-learning
+    name: "Skilling & Learning"
+    description: "Build and certify your team's Microsoft technical skills."
+    accent: "#5c2d91"
+    icon: school
+    links:
+      - title: "Enterprise Skilling Initiative (ESI)"
+        description: "Free and discounted instructor-led partner training, learning paths, and certification opportunities."
+        url: "https://esi.microsoft.com"
+        readable: "esi.microsoft.com"
+        icon: school
+      - title: "Microsoft Partner Training"
+        description: "The partner training hub: role-based learning paths, events, and skilling resources to upskill fast."
+        url: "https://partner.microsoft.com/en-us/training"
+        readable: "partner.microsoft.com/training"
+        icon: book
+
+  - id: news-community
+    name: "News & Community"
+    description: "Stay current with announcements, stories, and best practices."
+    accent: "#d83b01"
+    icon: news
+    links:
+      - title: "Microsoft Partner Blog"
+        description: "Official news, program updates, and partner success stories from Microsoft."
+        url: "https://partner.microsoft.com/blog/"
+        readable: "partner.microsoft.com/blog"
+        icon: news

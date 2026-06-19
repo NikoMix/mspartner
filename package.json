@@ -1,0 +1,26 @@
+{
+  "name": "ms-partner-resources",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static Next.js app of curated getting-started links for Microsoft Partners. Links are managed via data/links.yaml.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "serve": "npx --yes serve@latest out -l 3100"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "next": "^15.5.19",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3",
+    "typescript": "^5.7.3"
+  }
+}
