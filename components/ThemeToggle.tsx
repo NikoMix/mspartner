@@ -1,12 +1,28 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 type Theme = 'light' | 'dark';
 
 const STORAGE_KEY = 'pr-theme';
+const COLOR_SCHEME_QUERY = '(prefers-color-scheme: dark)';
 
-function getInitialTheme(): Theme {
+const listeners = new Set<() => void>();
+
+function notify(): void {
+  listeners.forEach((listener) => listener());
+}
+
+function readStoredTheme(): Theme | null {
+  try {
+    const value = localStorage.getItem(STORAGE_KEY);
+    return value === 'light' || value === 'dark' ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function readDocumentTheme(): Theme {
   if (typeof document !== 'undefined') {
     const attr = document.documentElement.getAttribute('data-theme');
     if (attr === 'light' || attr === 'dark') return attr;
@@ -14,29 +30,62 @@ function getInitialTheme(): Theme {
   return 'light';
 }
 
-export function ThemeToggle() {
-  const [mounted, setMounted] = useState(false);
-  const [theme, setTheme] = useState<Theme>('light');
-
-  useEffect(() => {
-    setTheme(getInitialTheme());
-    setMounted(true);
-  }, []);
-
-  function toggle() {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark';
-    setTheme(next);
+function applyTheme(next: Theme, persist: boolean): void {
+  if (typeof document !== 'undefined') {
     document.documentElement.setAttribute('data-theme', next);
+  }
+  if (persist) {
     try {
       localStorage.setItem(STORAGE_KEY, next);
     } catch {
       /* ignore storage failures (private mode, etc.) */
     }
   }
+  notify();
+}
 
-  // Avoid hydration mismatch: render a neutral button until mounted.
-  const isDark = mounted && theme === 'dark';
+// Subscribe React to the live theme sources: the OS colour-scheme preference and
+// cross-tab storage changes. The inline script in app/layout.tsx applies the
+// correct theme on first paint; this keeps the page in sync afterwards. While no
+// explicit choice is stored we follow the system setting live; once the visitor
+// toggles, their stored choice takes precedence.
+function subscribe(onStoreChange: () => void): () => void {
+  listeners.add(onStoreChange);
+  const media = window.matchMedia(COLOR_SCHEME_QUERY);
+
+  const onSystemChange = () => {
+    if (readStoredTheme() !== null) return;
+    applyTheme(media.matches ? 'dark' : 'light', false);
+  };
+
+  const onStorage = (event: StorageEvent) => {
+    if (event.key !== null && event.key !== STORAGE_KEY) return;
+    applyTheme(readStoredTheme() ?? (media.matches ? 'dark' : 'light'), false);
+  };
+
+  media.addEventListener('change', onSystemChange);
+  window.addEventListener('storage', onStorage);
+
+  return () => {
+    listeners.delete(onStoreChange);
+    media.removeEventListener('change', onSystemChange);
+    window.removeEventListener('storage', onStorage);
+  };
+}
+
+export function ThemeToggle() {
+  const theme = useSyncExternalStore<Theme>(
+    subscribe,
+    readDocumentTheme,
+    () => 'light',
+  );
+
+  const isDark = theme === 'dark';
   const label = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+
+  function toggle() {
+    applyTheme(isDark ? 'light' : 'dark', true);
+  }
 
   return (
     <button

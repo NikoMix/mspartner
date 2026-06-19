@@ -26,8 +26,9 @@ npm run build      # static export      → ./out
 npm run serve      # serve the built ./out on http://localhost:3100
 ```
 
-> Requires Node 18.18+ (developed on Node 24). Build output is a static site,
-> so `npm run start` is not used — host the contents of `out/` instead.
+> Requires Node 20.9+ (developed on Node 24; CI builds on Node 24). Build output
+> is a static site, so `npm run start` is not used — host the contents of `out/`
+> instead.
 
 ---
 
@@ -107,10 +108,14 @@ regenerate the static `out/`.
 
 - **Dark / light theme.** The page honors the visitor's OS preference
   (`prefers-color-scheme`) on first load and offers a sun/moon toggle in the top
-  bar to switch manually. The choice is persisted in `localStorage` under the
-  key **`pr-theme`**. A tiny inline script in `app/layout.tsx` applies the saved
-  theme *before* first paint, so there is no light-to-dark flash on reload.
-  Colors are driven by CSS custom properties; the dark palette lives in the
+  bar to switch manually. Until an explicit choice is made the page keeps
+  following the system setting **live** — flip your OS between light and dark and
+  the page updates without a reload. A manual toggle is persisted in
+  `localStorage` under the key **`pr-theme`** and is synced across open tabs; a
+  tiny inline script in `app/layout.tsx` applies the saved theme *before* first
+  paint, so there is no light-to-dark flash on reload. `ThemeToggle.tsx`
+  subscribes to those sources via React's `useSyncExternalStore`. Colors are
+  driven by CSS custom properties; the dark palette lives in the
   `[data-theme='dark']` block of `app/globals.css`.
 - **Responsive top menu.** On medium and small screens the category nav collapses
   into a hamburger dropdown so the "Partner Resources" brand never wraps or
@@ -161,6 +166,24 @@ folder to any static host:
 
 Because `output: 'export'` is set (with `images.unoptimized` and
 `trailingSlash`), there is no Node server requirement at runtime.
+
+### GitHub Pages (automated)
+
+This repo ships a workflow — `.github/workflows/deploy-pages.yml` — that builds
+the static export and publishes it to GitHub Pages on every push to `main` (and
+on demand from the **Actions** tab).
+
+One-time setup: in **Settings → Pages**, set **Source** to **GitHub Actions**.
+After that, each push to `main` lint-checks, builds, and deploys automatically.
+
+The site is published as a **project site** at
+`https://<owner>.github.io/<repo>/`, so assets must be served from the repo
+sub-path. The workflow reads that prefix from `actions/configure-pages` and
+passes it to the build via the `PAGES_BASE_PATH` environment variable, which
+`next.config.mjs` applies as Next's `basePath`. Local `npm run build` /
+`npm run serve` leave `PAGES_BASE_PATH` unset and build for the domain root, so
+nothing changes locally. A `.nojekyll` marker is emitted so GitHub serves the
+underscore-prefixed `_next/` directory verbatim.
 
 ---
 
