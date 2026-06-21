@@ -14,6 +14,12 @@
 .DS_Store
 *.pem
 
+# playwright / e2e
+/test-results/
+/playwright-report/
+/playwright/.cache/
+.last-run.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*

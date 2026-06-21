@@ -52,6 +52,18 @@ const paths: Record<IconKey, JSX.Element> = {
       d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Zm-1 13-3.5-3.5L9 10l2 2 4-4 1.5 1.5L11 15Z"
     />
   ),
+  store: (
+    <path
+      fill="currentColor"
+      d="M7 9V7a5 5 0 0 1 10 0v2h2.5a1 1 0 0 1 1 1.07l-.7 9.5A2 2 0 0 1 17.8 21H6.2a2 2 0 0 1-2-1.93l-.7-9.5A1 1 0 0 1 4.5 9H7Zm2 0h6V7a3 3 0 0 0-6 0v2Z"
+    />
+  ),
+  grid: (
+    <path
+      fill="currentColor"
+      d="M3 3h8v8H3V3Zm10 0h8v8h-8V3ZM3 13h8v8H3v-8Zm10 0h8v8h-8v-8Z"
+    />
+  ),
   link: (
     <path
       fill="currentColor"

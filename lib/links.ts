@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import yaml from 'js-yaml';
+import { load } from 'js-yaml';
 
 export type IconKey =
   | 'rocket'
@@ -11,6 +11,8 @@ export type IconKey =
   | 'news'
   | 'book'
   | 'shield'
+  | 'store'
+  | 'grid'
   | 'link';
 
 export interface LinkItem {
@@ -53,6 +55,8 @@ const VALID_ICONS: IconKey[] = [
   'news',
   'book',
   'shield',
+  'store',
+  'grid',
   'link',
 ];
 
@@ -76,7 +80,7 @@ function hostOf(url: string): string {
 export function getLinks(): LinksData {
   const file = path.join(process.cwd(), 'data', 'links.yaml');
   const raw = fs.readFileSync(file, 'utf8');
-  const parsed = yaml.load(raw) as Partial<LinksData> | undefined;
+  const parsed = load(raw) as Partial<LinksData> | undefined;
 
   if (!parsed || typeof parsed !== 'object') {
     throw new Error('data/links.yaml is empty or malformed.');

@@ -24,11 +24,13 @@ npm install        # first time only
 npm run dev        # local dev server  → http://localhost:3000
 npm run build      # static export      → ./out
 npm run serve      # serve the built ./out on http://localhost:3100
+npm run test:e2e:local   # build + serve + run the Playwright E2E suite
 ```
 
 > Requires Node 20.9+ (developed on Node 24; CI builds on Node 24). Build output
 > is a static site, so `npm run start` is not used — host the contents of `out/`
-> instead.
+> instead. `npm run serve` uses a small zero-dependency static server
+> (`scripts/serve-static.mjs`) — no extra packages, no install step.
 
 ---
 
@@ -86,11 +88,12 @@ groups:
 ### Available icon keys
 
 ```
-rocket | badge | sparkle | money | school | news | book | shield | link
+rocket | badge | sparkle | money | school | news | book | shield | store | grid | link
 ```
 
 Unknown icon values fall back to `link` automatically. Icons are inline SVGs
-defined in `components/Icon.tsx` — add a new entry there to introduce a new key.
+defined in `components/Icon.tsx` — add a new entry there (and to the `IconKey`
+union + `VALID_ICONS` list in `lib/links.ts`) to introduce a new key.
 
 ### Order matters
 
@@ -138,6 +141,7 @@ partner-resources/
 ├─ app/
 │  ├─ layout.tsx          root layout + metadata
 │  ├─ page.tsx            reads links.yaml, renders the page
+│  ├─ icon.svg            favicon (file-based metadata icon; avoids a 404)
 │  └─ globals.css         ported Fluent-style theme tokens
 ├─ components/
 │  ├─ TopBar.tsx          brand + category nav (client: hamburger + scroll-spy)
@@ -145,13 +149,60 @@ partner-resources/
 │  ├─ Hero.tsx            title, subtitle, CTAs
 │  ├─ CategorySection.tsx one group → sticky heading + card grid
 │  ├─ LinkCard.tsx        one link card
-│  ├─ Footer.tsx          footer note
+│  ├─ Footer.tsx          footer note + Partner links
 │  └─ Icon.tsx            inline-SVG icon map
 ├─ lib/
 │  └─ links.ts            types + build-time YAML loader (getLinks)
+├─ scripts/
+│  └─ serve-static.mjs    zero-dependency static server for ./out
+├─ tests/e2e/             Playwright suite (ui/ + health/ + helpers)
+├─ playwright.config.ts   E2E run modes (live / local build+serve / explicit URL)
+├─ .github/workflows/
+│  ├─ deploy-pages.yml    build → deploy → verify the live site
+│  └─ e2e.yml             PR gate + weekly link-health canary
 ├─ next.config.mjs        output: 'export' (static site)
 └─ package.json
 ```
+
+---
+
+## Testing (Playwright E2E)
+
+End-to-end tests live in `tests/e2e/` and run with
+[Playwright](https://playwright.dev) (Apache-2.0). They verify that the deployed
+page works in a real browser, with **zero console errors**, and that **every
+link resolves** (no 404s; redirects followed).
+
+| Area | File | What it checks |
+| ---- | ---- | -------------- |
+| Smoke | `ui/smoke.spec.ts` | No console/page errors or failed requests; hero + sections + cards render; favicon present; theme toggle flips, persists, and follows the OS scheme; responsive hamburger works. |
+| Navigation | `ui/navigation.spec.ts` | Every in-page `#anchor` targets a real element; clicking a category scrolls to its section; the brand returns to the top. |
+| Accessibility | `ui/accessibility.spec.ts` | No **serious/critical** WCAG 2.1 A/AA violations (via `@axe-core/playwright`, MPL-2.0). |
+| Link health | `health/link-health.spec.ts` | One check per external URL — reachable with redirects followed and final status `< 400`. |
+| DOM parity | `health/dom-parity.spec.ts` | Every catalog + footer link is actually rendered as an external anchor; no empty/`#` card links. |
+
+UI specs run across Chromium, Firefox, WebKit, and a mobile profile; the
+link-health/parity checks run once (Chromium) to avoid hammering external hosts.
+
+```bash
+npm run test:e2e:local    # build the export, serve it, run everything locally
+npm run test:e2e          # run against the live site (default) or E2E_BASE_URL
+npm run test:e2e:report   # open the last HTML report
+npm run typecheck:e2e     # type-check the test sources
+```
+
+**Targeting.** By default the suite runs against the live GitHub Pages URL.
+Set `E2E_LOCAL=1` to build + serve the export locally first, or
+`E2E_BASE_URL=<url>` to point at any deployment (the post-deploy CI job uses the
+freshly published `page_url`).
+
+**Link-health policy.** Checks follow redirects and pass on any final status
+`< 400`. A few Microsoft endpoints sit behind a sign-in wall or an anti-bot
+gateway (e.g. the Partner Center dashboard and the Marketplace storefront) and
+answer automated clients with `401/403/429` even though they load fine in a
+browser. Those are re-verified with a real Chromium navigation and treated as
+**reachable-but-gated** (logged as a warning) — only genuine `404/410`, server
+errors, or unresolvable hosts fail the build.
 
 ---
 
@@ -175,6 +226,8 @@ on demand from the **Actions** tab).
 
 One-time setup: in **Settings → Pages**, set **Source** to **GitHub Actions**.
 After that, each push to `main` lint-checks, builds, and deploys automatically.
+A final **verify** job then runs Playwright against the freshly published URL to
+confirm the live site loads cleanly and every link still resolves.
 
 The site is published as a **project site** at
 `https://<owner>.github.io/<repo>/`, so assets must be served from the repo
