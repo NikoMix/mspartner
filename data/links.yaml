@@ -15,7 +15,7 @@
 #    readable     (optional)  Short display version of the URL (defaults to host)
 #    icon         (optional)  One of the icon keys below (defaults to "link")
 #                             rocket | badge | sparkle | money | school |
-#                             news | book | shield | link
+#                             news | book | shield | store | grid | link
 #    badge        (optional)  Small pill shown on the card (e.g. "New", "AI")
 #
 #  Group fields:
@@ -47,6 +47,12 @@ groups:
         readable: "partner.microsoft.com"
         icon: rocket
         badge: "Start"
+      - title: "Microsoft Partner Center"
+        description: "The partner portal: manage your account, enrollments, benefits, referrals, payouts, and marketplace offers. Sign-in required."
+        url: "https://partner.microsoft.com/dashboard"
+        readable: "partner.microsoft.com/dashboard"
+        icon: grid
+        badge: "Portal"
 
   - id: programs-specializations
     name: "Programs & Specializations"
@@ -65,6 +71,19 @@ groups:
         readable: "partner.microsoft.com/blog"
         icon: sparkle
         badge: "AI"
+
+  - id: marketplace-selling
+    name: "Marketplace & Selling"
+    description: "List, transact, and grow with customers through the commercial marketplace."
+    accent: "#038387"
+    icon: store
+    links:
+      - title: "Microsoft Marketplace"
+        description: "The unified storefront (AppSource + Azure Marketplace) where customers discover, buy, and deploy partner solutions, AI apps, and agents — and where you publish and co-sell yours."
+        url: "https://marketplace.microsoft.com/"
+        readable: "marketplace.microsoft.com"
+        icon: store
+        badge: "New"
 
   - id: funding-incentives
     name: "Funding & Incentives"

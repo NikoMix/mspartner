@@ -35,6 +35,14 @@ updates:
         update-types:
           - minor
           - patch
+    ignore:
+      # ESLint 10 is incompatible with eslint-config-next@16 (its bundled
+      # eslint-plugin-react calls the removed context.getFilename and crashes
+      # `next lint`). Hold at the latest 9.x until eslint-config-next ships a
+      # build that supports ESLint 10; minor/patch 9.x updates still flow.
+      - dependency-name: eslint
+        update-types:
+          - version-update:semver-major
 
   # Keep the Pages workflow's actions current and patched.
   - package-ecosystem: github-actions
