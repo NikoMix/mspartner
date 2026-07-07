@@ -96,6 +96,11 @@ groups:
         url: "https://azure.microsoft.com/en-us/solutions/azure-accelerate/"
         readable: "azure.microsoft.com/azure-accelerate"
         icon: money
+      - title: "Microsoft Funding Resources"
+        description: "Always up-to-date Microsoft Funding Resources"
+        url: "https://partner.microsoft.com/en-us/asset/collection/microsoft-commerce-incentive-resources#/"
+        readable: "microsoft-commerce-incentive-resources"
+        icon: money
 
   - id: skilling-learning
     name: "Skilling & Learning"
